@@ -1,0 +1,111 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+.container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4070f4;
+}
+
+.form {
+  background: #fff;
+  max-width: 430px;
+  width: 100%;
+  padding: 30px;
+  border-radius: 6px;
+}
+
+header {
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+  color: #232836;
+}
+
+.field {
+  margin-top: 20px;
+  position: relative;
+}
+
+.field input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #cacaca;
+  border-radius: 6px;
+  font-size: 16px;
+  outline: none;
+}
+
+.field input:focus {
+  border-color: #4070f4;
+}
+
+.radio-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.radio-group label {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.radio-group input {
+  margin-right: 8px;
+  accent-color: #4070f4;
+}
+
+.button-field {
+  margin-top: 30px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: #4070f4;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #3058c5;
+}
+
+.form-link {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.form-link a {
+  color: #4070f4;
+  text-decoration: none;
+}
+
+.form-link a:hover {
+  text-decoration: underline;
+}
+
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: #8b8b8b;
+}

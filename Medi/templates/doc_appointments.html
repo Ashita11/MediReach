@@ -1,0 +1,326 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% for s in appointments %}
+    <h5>Patient:{{s.patient.name}}</h5>
+    <p>Slot:{{s.appointment_time}}</p>
+    <p>Day:{{s.appointment_date}}</p>
+    <p>Status:{{s.status}}</p>
+    <a href="{% url 'confirm' %}?id={{s.id}}">Confirm</a>
+    {% endfor %}
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Header */
+        header {
+            background: #1a76d1;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background: white;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #1a76d1;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+
+        nav ul li a:hover {
+            background: #1a76d1;
+            color: white;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Appointment Cards */
+        .appointment-card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 5px solid #1a76d1;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .appointment-card:hover {
+            transform: scale(1.02);
+        }
+
+        .appointment-card p {
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+
+        .appointment-card strong {
+            color: #333;
+        }
+
+        /* Appointment Status Colors */
+        .confirmed {
+            color: green;
+            font-weight: bold;
+        }
+
+        .pending {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .completed {
+            color: gray;
+            font-weight: bold;
+        }
+
+        .cancelled {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Cancel Button */
+        .cancel-btn{
+            position: absolute;
+            right: 15px;
+            bottom: 25px;
+            width: 70px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background: darkred;
+        }
+
+        .success-btn{
+            position: absolute;
+            right: 15px;
+            top: 25px;
+            width: 70px;
+            background: green;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .confirm-btn{
+            position: absolute;
+            right: 15px;
+            top: 25px;
+            width: 70px;
+            background: green;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            background: green;
+        }
+
+        .success-btn:hover{
+            background: darkgreen;
+        }
+
+        .confirm-btn:hover{
+            background: darkgreen;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            main {
+                width: 90%;
+                padding: 15px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav ul li {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>My Appointments</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a onclick="showAppointments('pending')">Pending</a></li>
+            <li><a onclick="showAppointments('confirmed')">Confirmed</a></li>
+            <li><a onclick="showAppointments('completed')">Completed</a></li>
+            <li><a onclick="showAppointments('cancelled')">Cancelled</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="appointments">
+        </section>
+    </main>
+
+    <script>
+        let appointments = JSON.parse('{{ appointments|safe|escapejs }}');
+        const now='{{ current_time|safe|escapejs }}'
+        const today='{{ today|safe|escapejs }}'
+        const did='{{ doc_id|safe|escapejs }}'
+        const pid='{{ pat_id|safe|escapejs }}'
+        const role="doc";
+
+        function parseTime(timeStr) {
+            let [time, modifier] = timeStr.split(" ");
+            let [hours, minutes] = time.split(":").map(Number);
+            if (modifier === "PM" && hours !== 12) hours += 12;
+            if (modifier === "AM" && hours === 12) hours = 0;
+            return { hours, minutes };
+        }
+
+        function sortAppointments(type) {
+            return appointments[type].sort((a, b) => {
+                let dateA = new Date(a.date);
+                let dateB = new Date(b.date);
+
+                if (dateA - dateB !== 0) {
+                    return dateA - dateB; // Sort by date first
+                }
+
+                let timeA = parseTime(a.time);
+                let timeB = parseTime(b.time);
+
+                if (timeA.hours !== timeB.hours) {
+                    return timeA.hours - timeB.hours; // Sort by hour
+                }
+
+                return timeA.minutes - timeB.minutes; // Sort by minute
+            });
+        }
+
+        function showAppointments(type) {
+            const section = document.getElementById("appointments");
+            section.innerHTML = "";  
+            appointments[type] = sortAppointments(type); 
+
+            if (appointments[type].length === 0) {
+                section.innerHTML = `<i>No ${type} appointments.</i>`;
+                return;
+            }
+
+            appointments[type].forEach((app, index) => {
+                section.innerHTML += `
+                    <div class="appointment-card" id="app-${type}-${index}">
+                        <p><strong>Date:</strong> ${app.date}</p>
+                        <p><strong>Time:</strong> ${app.time}</p>
+                        <p><strong>Patient:</strong> ${app.patient}</p>
+                        <p class="${app.status.toLowerCase()}"><strong>Status:</strong> ${app.status}</p>
+                        ${type === 'pending' || type === 'confirmed' ? `<button class="cancel-btn" onclick="cancelAppointment('${app.id}', '${type}', ${index})">Cancel</button>` : ''}
+                        ${type === 'confirmed' && app.date===today && app.time <= now ? `<a href="/Medi/video?did=${did}&pid=${pid}&role=${role}&id=${app.id}"><button class="success-btn">Join</button></a>` : ''}
+                        ${type === 'pending'? `<a href="/Medi/confirm?id=${app.id}"><button class="confirm-btn">Confirm</button></a>` : ''}\
+                    </div>
+                `;
+            });
+        }
+
+        async function cancelAppointment(appointmentId, type, index) {
+            try {
+                const response = await fetch('/Medi/cancel-appointment/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ appointment_id: appointmentId })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        appointments[type].splice(index, 1);
+                        appointments["cancelled"].push(data.updated_appointment);
+                        document.getElementById(`app-${type}-${index}`).remove();
+                        showAppointments(type);
+                        alert("Appointment canceled successfully.");
+                    }
+                } else {
+                    alert("Failed to cancel appointment.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while canceling the appointment.");
+            }
+        }
+
+        // Show confirmed appointments by default
+        showAppointments('confirmed');
+    </script>
+</body>
+
+</html>

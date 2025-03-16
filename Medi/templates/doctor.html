@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Dashboard</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'doctor.css' %}">
+
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="profile">
+        {% load static %}
+        <img src="{% static 'images.png' %}" alt="Doctor Profile" class="profile-img">
+        <h2>{{doc.name}}</h2>
+        <p>{{doc.email}}</p>
+        <a href="{% url 'doc_logout' %}"><button class="logout-btn">Log Out</button></a>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#" class="active">Dashboard</a></li>
+          <li><a href="{% url 'doc_appointments' %}">My Appointments</a></li>
+          <li><a href="{% url 'availability' %}">Availability</a></li>
+          <li><a href="#">My Patients</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          <li><a href="logout"><button id="add" class="logout">Logout</button></a>
+        </ul>
+      </nav>
+    </div>
+    <div class="main-content">
+      <header>
+        <h1>Dashboard</h1>
+        <div class="date-display">
+          <p>Today's Date</p>
+          <span id="currentDate"></span>
+        </div>
+      </header>
+      <section class="welcome-section">
+        <h2>Welcome!</h2>
+        <p>
+          Thanks for joining with us. We are always trying to get you a complete
+          service. You can view your daily schedule, reach patients' appointments at home!
+        </p>
+        <a href="{% url 'doc_appointments' %}"><button class="view-appointments-btn">View My Appointments</button></a>
+      </section>
+
+      <section class="status-section">
+        <div class="status-card">
+          <p>1</p>
+          <span>All Doctors</span>
+        </div>
+        <div class="status-card">
+          <p>2</p>
+          <span>All Patients</span>
+        </div>
+        <div class="status-card">
+          <p>1</p>
+          <span>New Booking</span>
+        </div>
+        <div class="status-card">
+          <p>{{sessions}}</p>
+          <span>Today Sessions</span>
+        </div>
+      </section>
+
+      <section class="sessions-section">
+        <h2>Your Upcoming Sessions Until Next Week</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Session Title</th>
+              <th>Scheduled Date</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="3" class="no-data">
+                We couldn't find anything related to your sessions.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript to display the current date
+    const dateElement = document.getElementById("currentDate");
+    const currentDate = new Date();
+
+    // Format the date as YYYY-MM-DD
+    const formattedDate = currentDate.toISOString().split("T")[0];
+
+    // Set the date in the span
+    dateElement.textContent = formattedDate;
+  </script>
+</body>
+</html>

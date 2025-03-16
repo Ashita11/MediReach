@@ -1,0 +1,719 @@
+{% load static %}
+
+
+<!doctype html>
+<html class="no-js" lang="zxx">
+    <head>
+        <!-- Meta Tags -->
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="keywords" content="Site keywords here">
+		<meta name="description" content="">
+		<meta name='copyright' content=''>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		
+		<!-- Title -->
+        <title>MediReach -Your gateway to health and wellness</title>
+		
+		<!-- Favicon -->
+        <link rel="icon" href="{% static 'images/tab.png' %}">
+		
+		<!-- Google Fonts -->
+		<link href="https://fonts.googleapis.com/css?family=Poppins:200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet">
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/nice-select.css' %}">
+        <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/icofont.css' %}">
+        <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/owl-carousel.css' %}">
+        <link rel="stylesheet" href="{% static 'css/datepicker.css' %}">
+        <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+        <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+
+		<style>
+			#login{
+				color: black;
+				position: absolute;
+				top: 20px;
+			}
+			#login:hover{
+				color: blue;
+			}
+
+			#chatbot{
+				position: fixed;
+				top: 0px;
+				right: 10px;
+				z-index: 2;
+			}
+		</style>
+		
+    </head>
+    <body>
+	
+		<!-- Preloader -->
+        <div class="preloader"> 
+            <div class="loader">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+
+                <div class="indicator"> 
+                    <svg width="16px" height="12px">
+                        <polyline id="back" points="1 6 4 6 6 11 10 1 12 6 15 6"></polyline>
+                        <polyline id="front" points="1 6 4 6 6 11 10 1 12 6 15 6"></polyline>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <!-- End Preloader -->
+		<!-- Header Area -->
+		<header class="header" >
+			<a href="{% url 'chatbot' %}"><img id="chatbot" src="{% static 'img/Chatbot.png' %}" alt="" style="height: 75px; width: 75px;"></a>
+		<div class="header-inner">
+				<div class="container">
+					<div class="inner">
+						<div class="row">
+							<div class="col-lg-3 col-md-3 col-12">
+								<!-- Start Logo -->
+								<div class="logo">
+									<a href="home.html"><img src="{% static 'img/edit.png' %}" alt="#"></a>
+								</div>
+								<!-- End Logo -->
+								<!-- Mobile Nav -->
+								<div class="mobile-nav"></div>
+								<!-- End Mobile Nav -->
+							</div>
+							<div class="col-lg-7 col-md-9 col-12">
+								<!-- Main Menu -->
+								<div class="main-menu">
+									<nav class="navigation">
+										<ul class="nav menu">
+											<li class="active"><a href="#">Home </a></li>
+											<li><a href="{% url 'pat_appointments' %}">My Appointment </a></li>
+											<li><a href="{% url 'doc_login' %}">For Doctors </a></li>
+											<li><a href="#">Blogs </a></li>
+											<li><a href="#">Contact Us</a></li>
+										</ul>
+									</nav>
+								</div>
+								<!--/ End Main Menu -->
+							</div>
+							<div class="col-lg-2 col-12">
+								<div class="get-quote">
+									<!-- <a href="login.html" class="btn">Login</a> -->
+									{% if name %}
+                                    <a href="{% url 'logout' %}"><button class="btn">Logout</button></a>
+									{% else %}
+									<a href="{% url 'login' %}" id="login">Login/Signup</a>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--/ End Header Inner -->
+		</header>
+		<!-- End Header Area -->
+		
+		<!-- Slider Area -->
+		<section class="slider">
+			<div class="hero-slider">
+				<!-- Start Single Slider -->
+				<div class="single-slider" style="background-image: url('{% static "img/slider2.jpg" %}');">
+					<div class="container">
+						<div class="row">
+							<div class="col-lg-7">
+								<div class="text">
+                                    <h1>Welcome, <span>{{name}}</span></h1><br>
+									<h1>We Provide <span>Medical</span> Services That You Can <span>Trust!</span></h1>
+									<p>MediReach simplifies healthcare access by connecting patients and doctors through a user-friendly platform. It offers doctor search, appointment booking, and secure access to medical records, ensuring convenience and efficiency for users.</p>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Single Slider -->
+				<!-- Start Single Slider -->
+				<div class="single-slider" style="background-image: url('{% static "img/slider.jpg" %}');">
+					<div class="container">
+						<div class="row">
+							<div class="col-lg-7">
+								<div class="text">
+                                    <h1>Welcome, <span>{{name}}</span></h1><br>
+									<h1>We Provide <span>Medical</span> Services That You Can <span>Trust!</span></h1>
+									<p>MediReach offers tailored doctor recommendations, a dedicated women’s health section, AI-driven medicine suggestions, and emergency support for nearby hospitals and blood donors. It also enables telemedicine consultations and features an intelligent chatbot for assistance.</p>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Start End Slider -->
+				<!-- Start Single Slider -->
+				<div class="single-slider" style="background-image: url('{% static "img/slider3.jpg" %}');">
+					<div class="container">
+						<div class="row">
+							<div class="col-lg-7">
+								<div class="text">
+                                    <h1>Welcome, <span>{{name}}</span></h1><br>
+									<h1>We Provide <span>Medical</span> Services That You Can <span>Trust!</span></h1>
+									<p>At MediReach, our mission is to revolutionize healthcare by making it more connected, accessible, and compassionate, bringing quality care closer to those who need it most. </p>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Single Slider -->
+			</div>
+		</section>
+		<!--/ End Slider Area -->
+		
+		<!-- Start Schedule Area -->
+		<section class="schedule">
+			<div class="container">
+			  <div class="schedule-inner">
+				<div class="row">
+				  <!-- Hospital Locator -->
+				  <div class="col-lg-3 col-md-6 col-12">
+					<div class="single-schedule first">
+					  <a class="inner" href="{% url 'locator' %}">
+						<div class="icon">
+						  <i class="fa fa-ambulance"></i>
+						</div>
+						<div class="single-content">
+						
+						  <h4>Hospital Locator</h4>
+						  <p>The Hospital Locator feature helps users find nearby hospitals efficiently, offering details like address, distance, available specialties, and contact information for convenient access.</p>
+						  
+						</div>
+					</a>
+					</div>
+				  </div>
+		  
+				  <!-- Disease Prediction -->
+				  <div class="col-lg-3 col-md-6 col-12">
+					<div class="single-schedule middle">
+					  <a class="inner" href="#">
+						<div class="icon">
+						  <i class="icofont-prescription"></i>
+						</div>
+						<div class="single-content">
+						  <h4>Disease Prediction</h4>
+						  <p>The Disease Prediction feature uses advanced algorithms to analyze symptoms, providing accurate insights into potential illnesses and recommending timely consultations.</p>
+						</div>
+						</a>
+					</div>
+				  </div>
+		  
+				  <!-- Report Analysis -->
+				  <div class="col-lg-3 col-md-6 col-12">
+					<div class="single-schedule last">
+					  <a class="inner" href="{% url 'report' %}">
+						<div class="icon">
+						  <i class="icofont-ui-clock"></i>
+						</div>
+						<div class="single-content">
+						  <h4>Report Analysis</h4>
+						  <p>The Report Analysis feature evaluates medical reports, providing insightful recommendations for treatments, medicines, and lifestyle changes tailored to individual health conditions efficiently</p>
+						  
+						</div>
+					</a>
+					</div>
+				  </div>
+		  
+				  <!-- Book Appointment -->
+				  <div class="col-lg-3 col-md-6 col-12">
+					<div class="single-schedule last">
+						<a class="inner" href="{% url 'appointment_page' %}">
+						<div class="icon">
+						  <i class="icofont-ui-clock"></i>
+						</div>
+						<div class="single-content">
+						  <h4>Book Appointment</h4>
+						  <p>The Book Appointment feature simplifies scheduling with doctors by allowing patients to view available slots, select preferred timings, and confirm appointments seamlessly.</p>
+						
+						</div>
+					</a>
+					</div>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		  </section>
+		  
+		<!--/End Start schedule Area -->
+
+		<!-- Start Feautes -->
+		<section class="Feautes section">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="section-title">
+							<h2>Additional Health Services<h2>
+							<img src="{% static 'img/section-img.png' %}" alt="#">
+							
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-4 col-12">
+						<!-- Start Single features -->
+						<div class="single-features">
+							<div class="signle-icon">
+								<i class="icofont icofont-ambulance-cross"></i>
+							</div>
+							<h3>Emergency Help</h3>
+							<p>Provides immediate assistance in critical situations, connecting users to medical professionals</p>
+						</div>
+						<!-- End Single features -->
+					</div>
+					<div class="col-lg-4 col-12">
+						<!-- Start Single features -->
+						<div class="single-features">
+							<div class="signle-icon">
+								<i class="icofont icofont-medical-sign-alt"></i>
+							</div>
+							<h3>Nearby Blood Bank</h3>
+							<p>Locate nearby blood banks and compatible donors efficiently for urgent needs.</p>
+						</div>
+						<!-- End Single features -->
+					</div>
+					<div class="col-lg-4 col-12">
+						<!-- Start Single features -->
+						<div class="single-features last">
+							<div class="signle-icon">
+								<i class="icofont icofont-stethoscope"></i>
+							</div>
+							<h3>Enriched Pharmacy</h3>
+							<p>Enriched Pharmacy ensures easy access to prescribed medicines and personalized health recommendations, enhancing user convenience and care.</p>
+						</div>
+						<!-- End Single features -->
+					</div>
+				</div>
+			</div>
+		</section>
+		<!--/ End Feautes -->
+		
+		<!-- Start Fun-facts -->
+		<div id="fun-facts" class="fun-facts section overlay">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-3 col-md-6 col-12">
+						<!-- Start Single Fun -->
+						<div class="single-fun">
+							<i class="icofont icofont-home"></i>
+							<div class="content">
+								<span class="counter">3468</span>
+								<p>Hospital Rooms</p>
+							</div>
+						</div>
+						<!-- End Single Fun -->
+					</div>
+					<div class="col-lg-3 col-md-6 col-12">
+						<!-- Start Single Fun -->
+						<div class="single-fun">
+							<i class="icofont icofont-user-alt-3"></i>
+							<div class="content">
+								<span class="counter">5507</span>
+								<p>Specialist Doctors</p>
+							</div>
+						</div>
+						<!-- End Single Fun -->
+					</div>
+					<div class="col-lg-3 col-md-6 col-12">
+						<!-- Start Single Fun -->
+						<div class="single-fun">
+							<i class="icofont-simple-smile"></i>
+							<div class="content">
+								<span class="counter">4379</span>
+								<p>Happy Patients</p>
+							</div>
+						</div>
+						<!-- End Single Fun -->
+					</div>
+					<div class="col-lg-3 col-md-6 col-12">
+						<!-- Start Single Fun -->
+						<div class="single-fun">
+							<i class="icofont icofont-table"></i>
+							<div class="content">
+								<span class="counter">32</span>
+								<p>Years of Experience</p>
+							</div>
+						</div>
+						<!-- End Single Fun -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--/ End Why choose -->
+		
+		<!-- Start Call to action -->
+		<section class="call-action overlay" data-stellar-background-ratio="0.5">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-12">
+						<div class="content">
+							<h2>Do you need Emergency Medical Care? Call @+918840580695</h2>
+							<p>Reach out to us via our website, email, or helpline for any assistance or inquiries.</p>
+							<div class="button">
+								<a href="#" class="btn">Contact Now</a>
+								<a href="#" class="btn">Learn More<i class="fa fa-long-arrow-right"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		
+		
+		
+		<!-- Start Blog Area -->
+		<section class="blog section" id="blog">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="section-title">
+							<h2>Keep up with Our Most Recent Medical News.</h2>
+							<img src="{% static 'img/section-img.png' %}" alt="#">
+							<p>Get insights about latest medical updates</p>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-4 col-md-6 col-12">
+						<!-- Single Blog -->
+						<div class="single-news">
+							<div class="news-head">
+								<img src="{% static 'img/blog1.jpg' %}" alt="#">
+							</div>
+							<div class="news-body">
+								<div class="news-content">
+									<div class="date">22 Aug, 2024</div>
+									<h2><a href="blog-single.html">Insulin degradation uncovered as a new driver of resistance</a></h2>
+									<p class="text">New study identifies insulin ‘chain-splitting’ during bloodstream transit as a game-changer in understanding.</p>
+								</div>
+							</div>
+						</div>
+						<!-- End Single Blog -->
+					</div>
+					<div class="col-lg-4 col-md-6 col-12">
+						<!-- Single Blog -->
+						<div class="single-news">
+							<div class="news-head">
+								<img src="{% static 'img/blog2.jpg' %}" alt="#">
+							</div>
+							<div class="news-body">
+								<div class="news-content">
+									<div class="date">15 Jul, 2024</div>
+									<h2><a href="blog-single.html">Top five way for solving teeth problems.</a></h2>
+									<p class="text">Brushing twice daily, flossing, and regular dental checkups are key to maintaining strong, healthy teeth.</p>
+								</div>
+							</div>
+						</div>
+						<!-- End Single Blog -->
+					</div>
+					<div class="col-lg-4 col-md-6 col-12">
+						<!-- Single Blog -->
+						<div class="single-news">
+							<div class="news-head">
+								<img src="{% static 'img/blog3.jpg' %}" alt="#">
+							</div>
+							<div class="news-body">
+								<div class="news-content">
+									<div class="date">05 Jan, 2024</div>
+									<h2><a href="blog-single.html">We provide highly reliable solutions.</a></h2>
+									<p class="text">Hospitals are pillars of healthcare, providing critical medical care, advanced treatments, and a haven for recovery and well-being.</p>
+								</div>
+							</div>
+						</div>
+						<!-- End Single Blog -->
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End Blog Area -->
+		
+		<!-- Start clients -->
+		<div class="clients overlay">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-12">
+						<div class="owl-carousel clients-slider">
+							<div class="single-clients">
+								<img src="{% static 'img/client1.png' %}" alt="#">
+							</div>
+							<div class="single-clients">
+								<img src="{% static 'img/client2.png' %}" alt="#">
+							</div>
+							<div class="single-clients">
+								<img src="{% static 'img/client3.png' %}" alt="#">
+							</div>
+							<div class="single-clients">
+								<img src="{% static 'img/client4.png' %}" alt="#">
+							</div>
+							<div class="single-clients">
+								<img src="{% static 'img/client5.png' %}" alt="#">
+							</div>
+							<div class="single-clients">
+								<img src="{% static 'img/client1.png' %}" alt="#">
+							</div>
+							<div class="single-clients">
+								<img src="{% static 'img/client2.png' %}" alt="#">
+							</div>
+							<div class="single-clients">
+								<img src="{% static 'img/client3.png' %}" alt="#">
+							</div>
+							<div class="single-clients">
+								<img src="{% static 'img/client4.png' %}" alt="#">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--/Ens clients -->
+		
+		<!-- Start Appointment -->
+		<section class="appointment">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="section-title">
+							<h2>We Are Always Ready to Help You. Book An Appointment</h2>
+							<img src="{% static 'img/section-img.png' %}" alt="#">
+							<p></p>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-6 col-md-12 col-12">
+						<form class="form" action="#">
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-12">
+									<div class="form-group">
+										<input name="name" type="text" placeholder="Name">
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-12">
+									<div class="form-group">
+										<input name="email" type="email" placeholder="Email">
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-12">
+									<div class="form-group">
+										<input name="phone" type="text" placeholder="Phone">
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-12">
+									<div class="form-group">
+										<div class="nice-select form-control wide" tabindex="0"><span class="current">Department</span>
+											<ul class="list">
+												<li data-value="1" class="option selected ">Department</li>
+												<li data-value="2" class="option">Cardiac Clinic</li>
+												<li data-value="3" class="option">Neurology</li>
+												<li data-value="4" class="option">Dentistry</li>
+												<li data-value="5" class="option">Gastroenterology</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-12">
+									<div class="form-group">
+										<div class="nice-select form-control wide" tabindex="0"><span class="current">Doctor</span>
+											<ul class="list">
+												<li data-value="1" class="option selected ">Doctor</li>
+												<li data-value="2" class="option">Dr. Akther Hossain</li>
+												<li data-value="3" class="option">Dr. Dery Alex</li>
+												<li data-value="4" class="option">Dr. Jovis Karon</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6 col-12">
+									<div class="form-group">
+										<input type="text" placeholder="Date" id="datepicker">
+									</div>
+								</div>
+								<div class="col-lg-12 col-md-12 col-12">
+									<div class="form-group">
+										<textarea name="message" placeholder="Write Your Message Here....."></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-lg-5 col-md-4 col-12">
+									<div class="form-group">
+										<div class="button">
+											<button type="submit" class="btn">Book An Appointment</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-7 col-md-8 col-12">
+									<p>( We will be confirm by an Text Message )</p>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="col-lg-6 col-md-12 ">
+						<div class="appointment-image">
+							<img src="{% static 'img/contact-img.png' %}" alt="#">
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End Appointment -->
+		
+		<!-- Start Newsletter Area -->
+		<section class="newsletter section">
+			<div class="container">
+				<div class="row ">
+					<div class="col-lg-6  col-12">
+						<!-- Start Newsletter Form -->
+						<div class="subscribe-text ">
+							<h6>Sign up for newsletter</h6>
+							<p class=""></p>
+						</div>
+						<!-- End Newsletter Form -->
+					</div>
+					<div class="col-lg-6  col-12">
+						<!-- Start Newsletter Form -->
+						<div class="subscribe-form ">
+							<form action="mail/mail.php" method="get" target="_blank" class="newsletter-inner">
+								<input name="EMAIL" placeholder="Your email address" class="common-input" onfocus="this.placeholder = ''"
+									onblur="this.placeholder = 'Your email address'" required="" type="email">
+								<button class="btn">Subscribe</button>
+							</form>
+						</div>
+						<!-- End Newsletter Form -->
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- /End Newsletter Area -->
+		
+		<!-- Footer Area -->
+		<footer id="footer" class="footer ">
+			<!-- Footer Top -->
+			<div class="footer-top">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-3 col-md-6 col-12">
+							<div class="single-footer">
+								<h2>About Us</h2>
+								<p>MediReach is a comprehensive healthcare platform connecting patients with doctors, hospitals, and essential medical services for seamless care.</p>
+								<!-- Social -->
+								<ul class="social">
+									<li><a href="#"><i class="icofont-facebook"></i></a></li>
+									<li><a href="#"><i class="icofont-google-plus"></i></a></li>
+									<li><a href="#"><i class="icofont-twitter"></i></a></li>
+									<li><a href="#"><i class="icofont-vimeo"></i></a></li>
+									<li><a href="#"><i class="icofont-pinterest"></i></a></li>
+								</ul>
+								<!-- End Social -->
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-12">
+							<div class="single-footer f-link">
+								<h2>Quick Links</h2>
+								<div class="row">
+									<div class="col-lg-6 col-md-6 col-12">
+										<ul>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Home</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>About Us</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Services</a></li>	
+										</ul>
+									</div>
+									<div class="col-lg-6 col-md-6 col-12">
+										<ul>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Testimonials</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>FAQ</a></li>
+											<li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Contact Us</a></li>	
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!--<div class="col-lg-3 col-md-6 col-12">
+							<div class="single-footer">
+								<h2></h2>
+								<p></p>
+								<ul class="time-sidual">
+									<li class="day"></li>
+									<li class="day"></li>
+									<li class="day"></li>
+								</ul>
+							</div>
+						</div>-->
+						
+						<!--<div class="col-lg-3 col-md-6 col-12">
+							<div class="single-footer">
+								<h2>Newsletter</h2>
+								<p>subscribe to our newsletter to get all our news in your inbox..</p>
+								<form action="mail/mail.php" method="get" target="_blank" class="newsletter-inner">
+									<input name="email" placeholder="Email Address" class="common-input" onfocus="this.placeholder = ''"
+										onblur="this.placeholder = 'Your email address'" required="" type="email">
+									<button class="button"><i class="icofont icofont-paper-plane"></i></button>
+								</form>
+							</div>
+						</div>-->
+					</div>
+				</div>
+			</div>
+			<!--/ End Footer Top -->
+			<!-- Copyright -->
+			<div class="copyright">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-12">
+							<div class="copyright-content">
+								<p>© Copyright 2024  |  All Rights Reserved by <a href="" target="_blank">medireach</a> </p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--/ End Copyright -->
+		</footer>
+		<!--/ End Footer Area -->
+
+
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery-migrate-3.0.0.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'js/easing.js' %}"></script>
+    <script src="{% static 'js/colors.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'js/jquery.nav.js' %}"></script>
+    <script src="{% static 'js/slicknav.min.js' %}"></script>
+    <script src="{% static 'js/jquery.scrollUp.min.js' %}"></script>
+    <script src="{% static 'js/niceselect.js' %}"></script>
+    <script src="{% static 'js/tilt.jquery.min.js' %}"></script>
+    <script src="{% static 'js/owl-carousel.js' %}"></script>
+    <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
+    <script src="{% static 'js/steller.js' %}"></script>
+    <script src="{% static 'js/wow.min.js' %}"></script>
+    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/waypoints/2.0.3/waypoints.min.js"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- Preloader Hide Script -->
+    <script>
+        $(window).on('load', function() {
+            // Hide preloader after the page is fully loaded
+            $('#preloader').fadeOut('slow');
+        });
+    </script>
+    </body>
+</html>

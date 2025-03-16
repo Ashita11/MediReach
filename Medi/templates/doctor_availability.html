@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+       /* General Page Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f4f6fb; /* Light background */
+    color: #333;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Main Heading */
+.heading {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Day Card */
+.day-card {
+    background: white;
+    border-left: 5px solid #4070f4; /* Blue accent */
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin: 15px auto;
+    max-width: 500px;
+    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: all 0.3s ease-in-out;
+}
+
+.day-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Day Header */
+.day-header {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4070f4;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #4070f4;
+    padding-bottom: 5px;
+}
+
+/* Slots */
+.slot {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    margin: 8px 0;
+    background: rgba(64, 112, 244, 0.1);
+    color: #4070f4;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+/* Icons */
+.icon {
+    font-size: 22px;
+    margin-right: 10px;
+}
+
+/* No Slots Message */
+.no-slots {
+    font-size: 18px;
+    font-weight: bold;
+    background: rgba(64, 112, 244, 0.1);
+    color: #4070f4;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+    </style>
+</head>
+<body>
+    <h2 class="heading">Available Timings for Dr. {{ doctor.name }}</h2>
+
+{% if availability %}
+    {% for day, slots in availability %}
+        <div class="day-card">
+            <div class="day-header">{{ day }}</div>
+            <div class="day-body">
+                {% for slot in slots %}
+                    {% if slot.morning_start %}
+                        <div class="slot">
+                            <span class="icon">☀️</span> 
+                            <span class="time">{{ slot.morning_start }} - {{ slot.morning_end }}</span>
+                        </div>
+                    {% endif %}
+                    {% if slot.evening_start %}
+                        <div class="slot">
+                            <span class="icon">🌙</span> 
+                            <span class="time">{{ slot.evening_start }} - {{ slot.evening_end }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p class="no-slots">No available slots</p>
+{% endif %}
+
+
+
+</body>
+</html>

@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Twilio Video Call</title>
+    <script src="https://sdk.twilio.com/js/video/releases/2.17.0/twilio-video.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <style>
+        /* Video Call Styling */
+        /* Centering the Video Container */
+        #video-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 85vw;
+            height: 85vh;
+            background-color: black;
+            border: 2px solid black;
+            overflow: hidden;
+        }
+
+
+        #local-video {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 20;
+            height: 25%;
+            border: 2px solid white;
+            background: black;
+        }
+
+        /* Video container styling */
+        #video-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            /* Ensures button is positioned inside */
+        }
+
+        #waiting-message {
+            position: absolute;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+
+        #leave-call {
+            position: absolute;
+            bottom: 10px;
+            /* Place it at the bottom of the video */
+            left: 45%;
+            /* transform: translateX(-50%); */
+            width: 50px;
+            height: 50px;
+            background: red;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            /* transition: background 0.3s ease, transform 0.2s ease; */
+        }
+
+        #leave-call:hover {
+            background: darkred;
+            /* transform: scale(1.1); */
+        }
+
+        #leave-call svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+            /* Makes the phone icon white */
+            display: flex;
+            justify-content: center;
+        }
+
+
+
+        /* Rating Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            float: right;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        /* Star Rating */
+        .star-rating {
+            font-size: 30px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .star {
+            color: #ccc;
+            transition: color 0.3s, transform 0.2s;
+        }
+
+        .star.active {
+            color: gold;
+        }
+
+        .star.hover {
+            color: gold;
+            transform: scale(1.2);
+        }
+
+        textarea {
+            width: 70%;
+            margin-top: 10px;
+            height: 70px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        /* Button Styling */
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100px;
+            border-radius: 5px;
+        }
+ 
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .prescription{
+            position: relative;
+            width: 90%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="video-wrapper">
+        <div id="video-container">
+            <div id="waiting-message"><i>Waiting for the other participant to join...</i></div>
+        </div>
+        <button id="leave-call" onclick="leaveCall()">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M6.62 10.79a15.093 15.093 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.05-.24 10.05 10.05 0 0 0 3.15.52 1 1 0 0 1 1 1v3.34a1 1 0 0 1-1 1 19 19 0 0 1-19-19 1 1 0 0 1 1-1H5a1 1 0 0 1 1 1 10.05 10.05 0 0 0 .52 3.15 1 1 0 0 1-.24 1.05z" />
+            </svg>
+        </button>
+        <video id="local-video" autoplay playsinline muted></video>
+    </div>
+
+
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRatingModal()">&times;</span>
+            <h2>Rate Your Consultation</h2>
+
+            <!-- Star Rating -->
+            <div class="star-rating">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+            </div>
+            <p id="selectedRating">Rating: 0</p>
+
+            <!-- Review Input -->
+            <textarea id="reviewText" placeholder="Write your review..." rows="3"></textarea>
+
+            <!-- Submit Button -->
+            <button id="submitReview">Submit</button>
+        </div>
+    </div>
+
+
+    <!-- Prescription Modal -->
+    <div id="prescriptionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRatingModal()">&times;</span>
+            <h2>Generate Prescription</h2>
+
+            <form id="prescription-form" method="post">
+                {% csrf_token %}
+                <label>Patient ID:</label>
+                <input class="prescription" type="number" name="patient_id" required><br><br>
+                <input class="prescription" type="hidden" name="id" value="{{id}}">
+        
+                <label>Diagnosis:</label>
+                <textarea class="prescription" name="diagnosis" required></textarea><br><br>
+        
+                <label>Medications:</label>
+                <div class="prescription" id="medicine-list">
+                    <div class="medicine-entry">
+                        <select class="medications" name="medicines[]" required></select>
+                        <input type="text" name="dosages[]" placeholder="Dosage (e.g., 2 tablets/day)" required>
+                        <button type="button" class="remove-medicine">Remove</button>
+                    </div>
+                </div>
+                <button class="prescription" type="button" id="add-medicine">Add Another Medicine</button><br><br>
+                <label for="test">Recommended Tests:</label>
+                <textarea class="prescription" name="test" id="test"></textarea><br>
+                <label for="remark">Remarks</label>
+                <textarea class="prescription" name="remark" id="remark"></textarea>
+                <button class="prescription" type="submit">Generate Prescription</button>
+            </form>
+        
+            <!-- <div id="download-link" style="display:none;">
+                <h3>Prescription Generated!</h3>
+                <a id="download-btn" href="#">Download PDF</a>
+            </div> -->
+        </div>
+    </div>
+
+
+    <script>
+        let room;
+        let rating = 0;
+        const userIdentity = '{{ role|safe|escapejs }}';
+        const did = '{{ did|safe|escapejs }}';
+        const pid = '{{ pid|safe|escapejs }}';
+        const id = '{{ id|safe|escapejs }}';
+        console.log(id)
+
+        async function joinRoom() {
+            const response = await fetch(`/Medi/get-token/?identity=${userIdentity}`);
+            const data = await response.json();
+            const token = data.token;
+
+            const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            document.getElementById("local-video").srcObject = localStream;
+
+            const localTracks = await Twilio.Video.createLocalTracks();
+            room = await Twilio.Video.connect(token, { name: `doc_${did}_pat_${pid}`, tracks: localTracks });
+
+            console.log(`Connected as ${userIdentity} to ${room.name}`);
+            document.getElementById("leave-call").style.display = "block";
+
+            room.participants.forEach(participant => {
+                participantConnected(participant);
+            });
+
+            room.on("participantConnected", participant => {
+                participantConnected(participant);
+            });
+        }
+
+        function participantConnected(participant) {
+            const div = document.createElement("div");
+            div.id = participant.sid;
+            document.getElementById("video-container").appendChild(div);
+
+            participant.tracks.forEach(publication => {
+                if (publication.isSubscribed) {
+                    div.appendChild(publication.track.attach());
+                }
+            });
+
+            participant.on("trackSubscribed", track => {
+                div.appendChild(track.attach());
+            });
+        }
+
+        function closeRatingModal() {
+            if(userIdentity=="pat")
+            document.getElementById("ratingModal").style.display = "none";
+            else
+            document.getElementById("prescriptionModal").style.display = "none";
+        }
+
+        // Star Rating Logic
+        document.querySelectorAll(".star").forEach(star => {
+            star.addEventListener("click", function () {
+                rating = parseInt(this.getAttribute("data-value"));
+
+                document.getElementById("selectedRating").textContent = `Rating: ${rating}`;
+
+                document.querySelectorAll(".star").forEach((s, index) => {
+                    s.classList.toggle("active", index < rating);
+                });
+            });
+
+            star.addEventListener("mouseover", function () {
+                let hoverRating = parseInt(this.getAttribute("data-value"));
+
+                document.querySelectorAll(".star").forEach((s, index) => {
+                    s.classList.toggle("hover", index < hoverRating);
+                });
+            });
+
+            star.addEventListener("mouseleave", function () {
+                document.querySelectorAll(".star").forEach(s => s.classList.remove("hover"));
+            });
+        });
+
+        document.getElementById("submitReview").addEventListener("click", async function () {
+            if (rating === 0) {
+                alert("Please select a rating!");
+                return;
+            }
+
+            const reviewText = document.getElementById("reviewText").value.trim();
+            const reviewData = { rating: rating, review_text: reviewText, did: did };
+
+            const response = await fetch(`/Medi/SubmitReview/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                },
+                body: JSON.stringify(reviewData)
+            });
+
+            if (response.ok) {
+                alert("Review submitted successfully!");
+                window.location.href = `/Medi/pat_appointments/`;
+            } else {
+                alert("Error submitting review!");
+            }
+        });
+
+        function leaveCall() {
+            if (room) room.disconnect();
+            if (userIdentity=="pat")
+            document.getElementById("ratingModal").style.display = "flex";
+            else
+            document.getElementById("prescriptionModal").style.display = "flex";
+        }
+
+        $(document).ready(function () {
+            function loadMedications(selectElement) {
+                $.ajax({
+                    url: "/Medi/get_medications/",  // Ensure the correct URL is used
+                    type: "GET",
+                    success: function (data) {
+                        selectElement.empty().append(new Option("Select a medicine", ""));
+                        data.medications.forEach(function (med) {
+                            selectElement.append(new Option(med, med));
+                        });
+                    },
+                    error: function () {
+                        alert("Failed to fetch medications.");
+                    }
+                });
+            }
+
+            loadMedications($('.medications'));  // Load medicines for the first entry
+
+            $("#add-medicine").click(function () {
+                let newEntry = $(".medicine-entry:first").clone();
+                newEntry.find("select, input").val("");  // Reset cloned inputs
+                newEntry.find(".medications").empty();   // Reset medications
+                loadMedications(newEntry.find(".medications"));  // Fetch again
+                $("#medicine-list").append(newEntry);
+            });
+
+            $(document).on("click", ".remove-medicine", function () {
+                if ($(".medicine-entry").length > 1) {
+                    $(this).parent().remove();
+                }
+            });
+
+            // CSRF Token Setup for AJAX POST
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            });
+
+            $("#prescription-form").submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    url: "/Medi/create_prescription/",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            // $("#download-btn").attr("href", "/Medi/download_prescription/" + data.prescription_id);
+                            // $("#download-link").show();
+                            alert("Review submitted successfully!");
+                            window.location.href = `/Medi/doc_appointments/`;
+                        } else {
+                            alert("Error generating prescription.");
+                        }
+                    }
+                });
+            });
+        });
+
+        joinRoom();
+    </script>
+</body>
+
+</html>

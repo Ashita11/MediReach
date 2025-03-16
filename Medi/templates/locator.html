@@ -1,0 +1,490 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Hospitals Search</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        #app {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        h1 {
+            color: #333;
+        }
+        #locationInput {
+            padding: 10px;
+            width: 80%;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #searchButton {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            color: #fff;
+            background-color: #007acc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #searchButton:hover {
+            background-color: #005f99;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Find Nearby Hospitals</h1>
+        <input type="text" id="locationInput" placeholder="Enter your location" />
+        <button id="searchButton">Search</button>
+    </div>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize the Leaflet map
+        const map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
+
+        // Add OpenStreetMap tile layer to the map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Get references to the input and button elements
+        const locationInput = document.getElementById("locationInput");
+        const searchButton = document.getElementById("searchButton");
+
+        // Function to get coordinates from user input location using Photon API
+        async function getCoordinates(location) {
+            const geocodeUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(location)}`;
+            const response = await fetch(geocodeUrl);
+            const data = await response.json();
+            if (data && data.features.length > 0) {
+                const lat = data.features[0].geometry.coordinates[1];
+                const lon = data.features[0].geometry.coordinates[0];
+                return { lat, lon };
+            } else {
+                alert("Location not found. Please try again.");
+                return null;
+            }
+        }
+
+        // Function to fetch nearby hospitals using Overpass API
+        async function findNearbyHospitals(lat, lon) {
+            const overpassUrl = `
+                https://overpass-api.de/api/interpreter?data=[out:json];
+                (node["amenity"="hospital"](around:1000,${lat},${lon});
+                way["amenity"="hospital"](around:1000,${lat},${lon});
+                relation["amenity"="hospital"](around:1000,${lat},${lon}););
+                out body;`;
+            
+            const response = await fetch(overpassUrl);
+            const data = await response.json();
+            return data.elements;
+        }
+
+        // Function to add hospital markers to the map with detailed info
+        function addHospitalsToMap(hospitals) {
+            // Clear existing markers
+            map.eachLayer((layer) => {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            hospitals.forEach(hospital => {
+                const lat = hospital.lat || (hospital.center && hospital.center.lat);
+                const lon = hospital.lon || (hospital.center && hospital.center.lon);
+                const name = hospital.tags ? hospital.tags.name || "Unnamed Hospital" : "Unnamed Hospital";
+                const address = hospital.tags ? hospital.tags.addr_full || "No address available" : "No address available";
+
+                const hospitalMarker = L.marker([lat, lon]).addTo(map);
+                hospitalMarker.bindPopup(`
+                    <b>${name}</b><br>
+                    
+                `);
+            });
+        }
+        // Address: ${address}<br>
+        // Event listener for the search button
+        searchButton.addEventListener("click", async () => {
+            const location = locationInput.value;
+            if (!location) {
+                alert("Please enter a location.");
+                return;
+            }
+
+            // Get coordinates from the location
+            const coordinates = await getCoordinates(location);
+            if (!coordinates) return;
+
+            const { lat, lon } = coordinates;
+
+            // Set map view to the location with a more zoomed-in level
+            map.setView([lat, lon], 15);
+
+            // Find nearby hospitals and display markers
+            const hospitals = await findNearbyHospitals(lat, lon);
+            if (hospitals.length > 0) {
+                addHospitalsToMap(hospitals);
+            } else {
+                alert("No nearby hospitals found.");
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+<!-- Better doctor
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Hospitals Search</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        #app {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        h1 {
+            color: #333;
+        }
+        #locationInput {
+            padding: 10px;
+            width: 80%;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #searchButton {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            color: #fff;
+            background-color: #007acc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #searchButton:hover {
+            background-color: #005f99;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Find Nearby Hospitals</h1>
+        <input type="text" id="locationInput" placeholder="Enter your location" />
+        <button id="searchButton">Search</button>
+    </div>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize the Leaflet map
+        const map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
+
+        // Add OpenStreetMap tile layer to the map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Get references to the input and button elements
+        const locationInput = document.getElementById("locationInput");
+        const searchButton = document.getElementById("searchButton");
+
+        // Function to get coordinates from user input location using Nominatim API
+        async function getCoordinates(location) {
+            const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`;
+            const response = await fetch(geocodeUrl);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                const lat = parseFloat(data[0].lat);
+                const lon = parseFloat(data[0].lon);
+                return { lat, lon };
+            } else {
+                alert("Location not found. Please try again.");
+                return null;
+            }
+        }
+
+        // Function to search for hospitals using BetterDoctor API
+        async function findNearbyHospitals(lat, lon) {
+            const apiKey = "6137ae8641mshaf000367869114dp126fcdjsn90c5cdc3b9ec"; // Replace with your BetterDoctor API key
+            const betterDoctorUrl = `https://api.betterdoctor.com/2016-03-01/practices?location=${lat},${lon},10&user_location=${lat},${lon}&skip=0&limit=10&user_key=${apiKey}`;
+            const response = await fetch(betterDoctorUrl);
+            const data = await response.json();
+            return data.data;
+        }
+
+        // Function to add hospital markers to the map with detailed info
+        function addHospitalsToMap(hospitals) {
+            // Clear existing markers
+            map.eachLayer((layer) => {
+                if (layer instanceof L.Marker && layer !== locationMarker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            // Add new markers for each hospital
+            hospitals.forEach(hospital => {
+                const { lat, lon } = hospital.visit_address;
+                const name = hospital.name || "Unnamed Hospital";
+                const address = `${hospital.visit_address.street}, ${hospital.visit_address.city}, ${hospital.visit_address.state}`;
+                const phone = hospital.phones && hospital.phones[0] ? hospital.phones[0].number : "No contact available";
+                const website = hospital.website || "No website available";
+
+                const hospitalMarker = L.marker([lat, lon]).addTo(map);
+                hospitalMarker.bindPopup(`
+                    <b>${name}</b><br>
+                    Address: ${address}<br>
+                    Phone: ${phone}<br>
+                    <a href="${website}" target="_blank">${website}</a>
+                `);
+            });
+        }
+
+        // Event listener for the search button
+        searchButton.addEventListener("click", async () => {
+            const location = locationInput.value;
+            if (!location) {
+                alert("Please enter a location.");
+                return;
+            }
+
+            // Get coordinates from the location
+            const coordinates = await getCoordinates(location);
+            if (!coordinates) return;
+
+            const { lat, lon } = coordinates;
+
+            // Set map view to the location with a more zoomed-in level
+            map.setView([lat, lon], 15);
+
+            // Find nearby hospitals and display markers
+            const hospitals = await findNearbyHospitals(lat, lon);
+            if (hospitals.length > 0) {
+                addHospitalsToMap(hospitals);
+            } else {
+                alert("No nearby hospitals found.");
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Hospitals Search</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        #app {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        h1 {
+            color: #333;
+        }
+        #locationInput {
+            padding: 10px;
+            width: 80%;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #searchButton {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            color: #fff;
+            background-color: #007acc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #searchButton:hover {
+            background-color: #005f99;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Find Nearby Hospitals</h1>
+        <input type="text" id="locationInput" placeholder="Enter your location" />
+        <button id="searchButton">Search</button>
+    </div>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize the Leaflet map
+        const map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
+
+        // Add OpenStreetMap tile layer to the map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Get references to the input and button elements
+        const locationInput = document.getElementById("locationInput");
+        const searchButton = document.getElementById("searchButton");
+
+        // Function to get coordinates from user input location using Nominatim API
+        async function getCoordinates(location) {
+            const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`;
+            const response = await fetch(geocodeUrl);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                const lat = parseFloat(data[0].lat);
+                const lon = parseFloat(data[0].lon);
+                return { lat, lon };
+            } else {
+                alert("Location not found. Please try again.");
+                return null;
+            }
+        }
+
+        // Function to fetch nearby hospitals using Overpass API
+        async function findNearbyHospitals(lat, lon) {
+            const overpassUrl = `
+                https://overpass-api.de/api/interpreter?data=[out:json];
+                (node["amenity"="hospital"](around:1000,${lat},${lon});
+                way["amenity"="hospital"](around:1000,${lat},${lon});
+                relation["amenity"="hospital"](around:1000,${lat},${lon}););
+                out body;`;
+            
+            const response = await fetch(overpassUrl);
+            const data = await response.json();
+            return data.elements;
+        }
+
+        // Function to add hospital markers to the map with detailed info
+        function addHospitalsToMap(hospitals) {
+            // Clear existing markers
+            map.eachLayer((layer) => {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            hospitals.forEach(hospital => {
+                const lat = hospital.lat || (hospital.center && hospital.center.lat);
+                const lon = hospital.lon || (hospital.center && hospital.center.lon);
+                const name = hospital.tags ? hospital.tags.name || "Unnamed Hospital" : "Unnamed Hospital";
+                const address = hospital.tags ? hospital.tags.addr_full || "No address available" : "No address available";
+
+                const hospitalMarker = L.marker([lat, lon]).addTo(map);
+                hospitalMarker.bindPopup(`
+                    <b>${name}</b><br>
+                    Address: ${address}<br>
+                `);
+            });
+        }
+
+        // Event listener for the search button
+        searchButton.addEventListener("click", async () => {
+            const location = locationInput.value;
+            if (!location) {
+                alert("Please enter a location.");
+                return;
+            }
+
+            // Get coordinates from the location
+            const coordinates = await getCoordinates(location);
+            if (!coordinates) return;
+
+            const { lat, lon } = coordinates;
+
+            // Set map view to the location with a more zoomed-in level
+            map.setView([lat, lon], 13);
+
+            // Find nearby hospitals and display markers
+            const hospitals = await findNearbyHospitals(lat, lon);
+            if (hospitals.length > 0) {
+                addHospitalsToMap(hospitals);
+            } else {
+                alert("No nearby hospitals found.");
+            }
+        });
+    </script>
+</body>
+</html> -->

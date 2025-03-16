@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'profile.css' %}">
+</head>
+<body>
+    <div class="profile-container">
+        <h1>Edit Doctor Profile</h1>
+        <form id="ProfileForm" method="POST" action="/Medi/profile/" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="profilePicture">Profile Picture</label>
+
+                {% if doc.profile_picture %}
+                    <div>
+                        <a href="{{ doc.profile_picture.url }}" download>
+                            <img src="{{ doc.profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                        </a>
+                        <!-- <p>Click the image to download</p> -->
+                    </div>
+                {% endif %}
+
+                <input type="file" name="profilePicture" id="profilePicture" accept="image/*"> 
+            </div>
+
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input name="name" type="text" id="name" value="{{ doc.name|default:'' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="specialization">Specialization</label>
+                <select name="specialization" id="specialization" required>
+                    {% for sp in specializations %}
+                        <option value="{{ sp.id }}" {% if sp.id == doc.specialization.id %}selected{% endif %}>
+                            {{ sp.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="experience">Experience</label>
+                <input type="text" id="experience" name="experience" value="{{ doc.experience|default:'' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fees">Fees for consultation</label>
+                <input type="number" id="fees" name="fees" value="{{ doc.fees|default:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" name="phone" id="phone" value="{{ doc.mobile|default:'' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" value="{{ doc.email|default:'' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" rows="3" required>{{ doc.address|default:'' }}</textarea>
+            </div>
+
+            <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+    </div>
+</body>
+</html>

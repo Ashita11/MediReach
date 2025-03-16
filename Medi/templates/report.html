@@ -1,0 +1,90 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Report Analysis and Diet Recommendation</title>
+    <link rel="stylesheet" href="{% static 'repor.css' %}">
+</head>
+<body>
+    <header>
+        <div style="position: relative;">
+            <img src="{% static 'img/medi.jpg.jpg' %}" alt="Medi Reach logo" style="position: absolute; right:1250px;top:10px;" >
+             
+           </div>
+        <h1>Medical Report Analysis and Diet Recommendation</h1>
+       
+        
+    </header>
+    <nav class="breadcrumb">
+        <a href="home" class="breadcrumb-link">Home</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="#" class="breadcrumb-link active">Lab Report Analysis</a>
+    </nav>
+    <main>
+        <section id="user-input">
+            <h2>Enter Your Details</h2>
+            <form id="details-form" method="POST" action="{% url 'analyze_report' %}">
+                {% csrf_token %}
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+
+                <label for="weight">Weight (kg):</label>
+                <input type="number" id="weight" name="weight" required>
+
+                <label for="height">Height (cm):</label>
+                <input type="number" id="height" height="height" required>
+
+                <label for="activity-level">Activity Level:</label>
+                <select id="activity-level" name="activity-level">
+                    <option value="sedentary">Sedentary</option>
+                    <option value="light">Lightly active</option>
+                    <option value="moderate">Moderately active</option>
+                    <option value="active">Active</option>
+                </select>
+                <section id="upload-section">
+                    <label for="report">Upload Your Medical Report:</label>
+                    <form id="upload-form">
+                        <input type="file" id="pdf-file" name="file" required>
+                        <button type="submit">Upload and Analyze</button>
+                    </form>
+                </section>
+            </form>
+        </section>
+
+        <section id="recommendations">
+            <h2>Your Diet Recommendations</h2>
+            <div id="recommendation-output"></div>
+            <form> 
+                <label >Diet Plans</label>
+                <div class="scroll-box">
+                    <h1 style="color: white;">Medi Reach</h1>
+                </div>
+            </form>
+        </section>
+    </main>
+        <section class="how-it-works">
+            <h1>How It Works</h1>
+            <div class="steps-container">
+                <div class="step">
+                    <img src="{% static 'img/upload-icon.png' %}" alt="Upload Your Report">
+                    <h2>Upload Your Report</h2>
+                    <p>Securely upload your lab report in a digital format.</p>
+                </div>
+                <div class="step">
+                    <img src="{% static 'img/analysis-icon.jpg' %}" alt="Get Expert Analysis">
+                    <h2>Get Expert Analysis</h2>
+                    <p>Our model carefully reviews your results, providing detailed explanations and insights.</p>
+                </div>
+                <div class="step">
+                    <img src="{% static 'img/report-icon.png' %}" alt="Receive Your Report">
+                    <h2>Receive Your Report</h2>
+                    <p>Get a comprehensive, easy-to-understand report delivered directly to your inbox.</p>
+                </div>
+            </div>
+        </section>
+        <script src="{% static 'js/report.js' %}"></script>
+</body>
+</html>

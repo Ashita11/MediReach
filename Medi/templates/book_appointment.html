@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctors List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        /* .doctor-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn-book {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        } */
+
+        .doctor-card {
+            position: relative;
+            background: white;
+            background-color: #a9d0fb;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            transition: 0.3s;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .doctor-card .fees {
+            background-color: green;
+            display: inline-block;
+            border-radius: 10px;
+            width: 100px;
+            color: white;
+            height: 25px;
+            margin: 0;
+        }
+
+        /* ⭐ Rating Badge at Top Right */
+        .rating-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgb(70, 109, 10);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* 🏥 Doctor Image Styling */
+        .doctor-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid #007bff;
+        }
+
+        /* 👇 Button Styling */
+        .btn-book {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .btn-book:hover {
+            background-color: #0056b3;
+        }
+
+        /* 📱 Responsive Adjustments */
+        @media (max-width: 768px) {
+            .doctor-card {
+                margin-bottom: 15px;
+            }
+        }
+
+
+
+        .availability-block {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            width: 50%;
+            max-width: 450px;
+            height: 65vh;
+            overflow-y: auto;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .filter-container {
+            background-color: #a9d0fb;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .slot-box {
+            display: inline-block;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            width: 30%;
+            min-width: 90px;
+            transition: 0.3s;
+        }
+
+        .slot-box:hover {
+            background-color: #c3e6cb;
+        }
+
+        .selected-slot {
+            background-color: #155724 !important;
+            color: white !important;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn-disabled {
+            background-color: grey;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .date-selection {
+            margin-bottom: 10px;
+        }
+
+        .active-date {
+            background-color: #007bff !important;
+            color: white !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Available Doctors</h2>
+
+        <!-- Filter Section -->
+        <div class="filter-container">
+            <div class="row">
+                <div class="col-md-4">
+                    <select id="specialization-filter" class="form-select">
+                        <option value="">Filter by Specialization</option>
+                        {% for specialization in specializations %}
+                        <option value="{{ specialization.name }}">{{ specialization.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="rating-filter" class="form-select">
+                        <option value="">Filter by Rating</option>
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars & Above</option>
+                        <option value="3">3 Stars & Above</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="fees-filter" class="form-select">
+                        <option value="">Filter by Fees</option>
+                        <option value="low">Low (₹0 - ₹500)</option>
+                        <option value="medium">Medium (₹500 - ₹1000)</option>
+                        <option value="high">High (₹1000+)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="doctors-list">
+            {% for doctor in doctors %}
+            <div class="col-md-4 mb-4">
+                <div class="doctor-card" data-specialization="{{ doctor.specialization.name }}"
+                    data-rating="{{ doctor.rating }}" data-fees="{{ doctor.fees }}">
+
+                    <!-- ⭐ Rating Badge -->
+                    {% if doctor.rating %}
+                    <span class="rating-badge">⭐ {{ doctor.rating }}</span>
+                    {% endif %}
+
+                    <!-- 🏥 Doctor Image -->
+                    <!-- <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.name }}" class="doctor-image"> -->
+
+                    <h4>{{ doctor.name }}</h4>
+                    <h6>{{ doctor.specialization.name }}</h6>
+                    <p class="fees">Fees: ₹{{ doctor.fees }}</p><br>
+
+                    <button class="btn btn-book mt-2"
+                        onclick="showAvailability('{{ doctor.id }}', '{{ doctor.name }}')">
+                        View Availability
+                    </button>
+                </div>
+            </div>
+
+
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="hideAvailability()"></div>
+
+    <div id="availability-block" class="availability-block">
+        <h4 id="doctor-name"></h4>
+        <div class="date-selection">
+            {% for day in upcoming_days %}
+            <button class="btn btn-outline-primary" onclick="loadAvailability('{{ day.date }}')"
+                id="date-btn-{{ day.date }}">
+                {{ day.day }} ({{ day.date }})
+            </button>
+            {% endfor %}
+        </div>
+
+        <div id="availability-container"></div>
+
+        <div class="btn-container">
+            <button class="btn btn-danger" onclick="hideAvailability()">Close</button>
+            <button id="book-appointment" class="btn btn-success btn-disabled" onclick="book()" disabled>Book
+                Appointment</button>
+        </div>
+    </div>
+
+    <script>
+        let doctorAvailability = JSON.parse('{{ doctor_availability|escapejs }}');
+        let slot_time = null
+        let selectedSlot = null;
+        let selectedTime = null;
+        let selectedDate = null;
+        let currentDoctorId = null;
+        let doc_id = null;
+        let csrfToken = '{{ csrf_token }}';
+
+        document.addEventListener("DOMContentLoaded", function () {
+            sortDoctorsByRating();
+        });
+
+        function sortDoctorsByRating() {
+            let doctorsContainer = document.getElementById("doctors-list");
+            let doctorCards = Array.from(document.querySelectorAll(".doctor-card"));
+
+            // Sort doctors by rating in descending order
+            doctorCards.sort((a, b) => {
+                let ratingA = parseFloat(a.getAttribute("data-rating")) || 0;
+                let ratingB = parseFloat(b.getAttribute("data-rating")) || 0;
+                return ratingB - ratingA; // Higher rating first
+            });
+
+            // Clear the doctor list and re-append sorted doctors
+            doctorsContainer.innerHTML = "";
+            doctorCards.forEach(card => {
+                doctorsContainer.appendChild(card.parentElement);
+            });
+        }
+
+
+        function showAvailability(doctorId, doctorName) {
+            doc_id = doctorId;
+            document.getElementById("doctor-name").innerText = doctorName;
+            currentDoctorId = doctorId;
+            let firstDate = Object.keys(doctorAvailability[doctorId])[0];
+            loadAvailability(firstDate);
+            document.getElementById("availability-block").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function loadAvailability(date) {
+            selectedDate = date;
+            let availability = doctorAvailability[currentDoctorId][date] || { morning_slots: [], evening_slots: [] };
+            let container = document.getElementById("availability-container");
+            container.innerHTML = "";
+
+            // Remove active class from all date buttons
+            document.querySelectorAll(".date-selection button").forEach(btn => {
+                btn.classList.remove("btn-primary");
+                btn.classList.add("btn-outline-primary");
+            });
+
+            // Highlight the selected date button
+            let selectedDateButton = document.getElementById(`date-btn-${date}`);
+            if (selectedDateButton) {
+                selectedDateButton.classList.remove("btn-outline-primary");
+                selectedDateButton.classList.add("btn-primary");
+            }
+
+            let content = "";
+
+            if (availability.morning_slots.length) {
+                content += `<h5>Morning</h5>` + availability.morning_slots.map(slot => `<div class="slot-box" onclick="selectSlot(this, '${slot}')">${slot}</div>`).join("");
+            }
+
+            if (availability.evening_slots.length) {
+                content += `<h5>Evening</h5>` + availability.evening_slots.map(slot => `<div class="slot-box" onclick="selectSlot(this, '${slot}')">${slot}</div>`).join("");
+            }
+
+            if (!content) {
+                content = "<p>No slots available for this day.</p>";
+                document.getElementById("book-appointment").classList.add("btn-disabled");
+                document.getElementById("book-appointment").disabled = true;
+            } else {
+                document.getElementById("book-appointment").classList.add("btn-disabled");
+                document.getElementById("book-appointment").disabled = true;
+            }
+
+            container.innerHTML = content;
+        }
+
+        function selectSlot(slotElement, slot) {
+            if (selectedSlot) selectedSlot.classList.remove("selected-slot");
+            selectedSlot = slotElement;
+            selectedTime = slot;
+            selectedSlot.classList.add("selected-slot");
+            slot_time = slot;
+            document.getElementById("book-appointment").classList.remove("btn-disabled");
+            document.getElementById("book-appointment").disabled = false;
+        }
+
+        function hideAvailability() {
+            document.getElementById("availability-block").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        function book() {
+            console.log("Booking appointment at: /book_appointment/");
+
+            $.ajax({
+                url: '/Medi/book_appointment/',
+                type: 'POST',
+                data: {
+                    doc_id: doc_id,
+                    slot_time: slot_time,
+                    selectedDate: selectedDate,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    console.log('Appointment booked successfully!');
+                    hideAvailability();
+                },
+                error: function (xhr, errmsg, err) {
+                    console.error("Error:", errmsg);
+                }
+            });
+        }
+
+        function filterDoctors() {
+            let selectedSpecialization = document.getElementById("specialization-filter").value.toLowerCase();
+            let selectedRating = document.getElementById("rating-filter").value;
+            let selectedFees = document.getElementById("fees-filter").value;
+
+            document.querySelectorAll(".doctor-card").forEach(card => {
+                let doctorSpecialization = card.getAttribute("data-specialization").toLowerCase();
+                let doctorRating = parseFloat(card.getAttribute("data-rating"));
+                let doctorFees = parseFloat(card.getAttribute("data-fees"));
+
+                let matchesSpecialization = !selectedSpecialization || doctorSpecialization.includes(selectedSpecialization);
+                let matchesRating = !selectedRating || doctorRating >= parseInt(selectedRating);
+                let matchesFees = !selectedFees ||
+                    (selectedFees === "low" && doctorFees <= 500) ||
+                    (selectedFees === "medium" && doctorFees > 500 && doctorFees <= 1000) ||
+                    (selectedFees === "high" && doctorFees > 1000);
+
+                if (matchesSpecialization && matchesRating && matchesFees) {
+                    card.parentElement.style.display = "block";
+                } else {
+                    card.parentElement.style.display = "none";
+                }
+            });
+        }
+
+        document.getElementById("specialization-filter").addEventListener("change", filterDoctors);
+        document.getElementById("rating-filter").addEventListener("change", filterDoctors);
+        document.getElementById("fees-filter").addEventListener("change", filterDoctors);
+
+    </script>
+</body>
