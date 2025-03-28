@@ -26,8 +26,10 @@ import twilio.jwt.access_token.grants as Grants
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from reportlab.lib.utils import ImageReader
-
+import json
+import pickle
+import numpy as np
+MODEL_PATH="/Users/shrutisrivastava/shruti/FinalYearProject/MediReach/models"
 
 
 
@@ -255,7 +257,6 @@ def medical_report_analysis(req):
         })
 
     return render(req, "report.html")
-
 
 
 
@@ -973,3 +974,67 @@ class SubmitReview(APIView):
             defaults={"rating": rating, "review_text": review_text}
         )
         return Response({"message": "Review submitted successfully!"})
+    
+
+def disease(request):
+    if request.session.get('user_id'):
+        return render(request,'disease.html')
+    return redirect('login')
+@csrf_exempt 
+def predict_disease(request, disease):
+    if request.method == 'POST':
+        try:
+            data =request.POST  
+            model_file = {
+                'diabetes': 'diabetes_prediction_model.sav',
+                'heart': 'heart_model.sav'
+            }.get(disease)
+            print(request.POST)  # Check what data is being sent
+            print(request.body)  # Inspect raw data if using JSON
+
+            if not model_file:
+                return JsonResponse({'error': 'Invalid disease type'}, status=400)
+            model_path = os.path.join(MODEL_PATH, model_file)
+            with open(model_path, 'rb') as file:
+                model = pickle.load(file)
+            if disease == 'diabetes':
+                features = np.array([[
+                    int(data.get('pregnancies', 0)),
+                    float(data.get('glucose', 0)),
+                    float(data.get('blood_pressure', 0)),
+                    float(data.get('skin_thickness', 0)),
+                    float(data.get('insulin', 0)),
+                    float(data.get('bmi', 0)),
+                    float(data.get('diabetes_pedigree', 0)),
+                    int(data.get('age', 0))
+                ]])
+            elif disease == 'heart':
+                features = np.array([[
+                    int(data.get('age', 0)),
+                    int(data.get('sex', 0)),
+                    int(data.get('cp', 0)),
+                    float(data.get('trestbps', 0)),
+                    float(data.get('chol', 0)),
+                    int(data.get('fbs', 0)),
+                    int(data.get('restecg', 0)),
+                    float(data.get('thalach', 0)),
+                    int(data.get('exang', 0)),
+                    float(data.get('oldpeak', 0)),
+                    int(data.get('slope', 0)),
+                    int(data.get('ca', 0)),
+                    int(data.get('thal', 0))
+                ]])
+            prediction = model.predict(features)[0]
+            res = "The person is not having selected disease!"
+            if prediction == 1:
+                if disease == 'diabetes':
+                    res = "The person is prone to Diabetes!"
+                elif disease == 'heart':
+                    res = "The person is prone to Heart Disease!"
+                elif disease == 'parkinsons':
+                    res = "The person is prone to Parkinson's Disease!"
+
+            return JsonResponse({'prediction': str(res)}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)

@@ -33,7 +33,8 @@ urlpatterns = [
     # path('create/', create_prescription, name='create_prescription'),
     # path('download/<int:prescription_id>/', download_prescription, name='download_prescription'),
     # path('api/medications/', get_medications, name='get_medications'),
-
+    path('disease/', disease, name='disease'),
+    path('predict/<str:disease>/', predict_disease, name='predict_disease'),
     path('get_medications/', get_medications, name='get_medications'),
     path('create_prescription/', create_prescription, name='create_prescription'),
     path('download_prescription/', download_prescription, name='download_prescription'),
