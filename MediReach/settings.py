@@ -16,7 +16,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY_chat")
 BASE_DIR = Path(__file__).resolve().parent.parent
 # DEBUG = True
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ["127.0.0.1", "192.168.124.110","192.168.1.7", "localhost","192.168.104.110"]
+ALLOWED_HOSTS = ["127.0.0.1", "192.168.124.110","192.168.1.7", "localhost","192.168.104.110","192.168.192.110"]
 # CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000", "http://192.168.124.110:8000"]
 
 

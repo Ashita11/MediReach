@@ -148,10 +148,15 @@ def doctor(req):
             appointments=Appointment.objects.filter(doc=user,status="confirmed")
             today=date.today()
             sessions=0
+            doc=Doctor.objects.all()
+            nd=len(doc)
+            pat=Patient.objects.all()
+            np=len(pat)
+            ap=Appointment.objects.filter(doc=user,status="pending")
             for a in appointments:
                 if a.appointment_date==today:
                     sessions+=1
-            return render(req, 'doctor.html', {'doc': user,'sessions':sessions})
+            return render(req, 'doctor.html', {'doc': user,'sessions':sessions,'np':np,'nd':nd,'ap':ap})
         except Doctor.DoesNotExist:
             del req.session['doc_id']
             return redirect('doc_login')
@@ -473,20 +478,20 @@ def chatbot_response(request):
                 return JsonResponse({"response": response_text, "language": user_language})
 
             # Restrict bot to only health-related queries
-            health_keywords = [
-                "health", "diet", "exercise", "body", "multivitamins", "disease",
-                "food", "nutrition", "medicine", "workout", "lifestyle", "fitness",
-                "symptoms", "doctor", "hospital", "wellness", "treatment"
-            ]
-            if not any(keyword in user_input for keyword in health_keywords):
-                restricted_response = "I'm specialize in providing information related to health, wellness, and the human body.Let me know if you need any assistance regarding that."
+            # health_keywords = [
+            #     "health", "diet", "exercise", "body", "multivitamins", "disease",
+            #     "food", "nutrition", "medicine", "workout", "lifestyle", "fitness",
+            #     "symptoms", "doctor", "hospital", "wellness", "treatment"
+            # ]
+            # if not any(keyword in user_input for keyword in health_keywords):
+            #     restricted_response = "I'm specialize in providing information related to health, wellness, and the human body.Let me know if you need any assistance regarding that."
                 
-                # Translate restriction message if needed
-                if user_language != "en":
-                    translator = GoogleTranslator(source="en", target=user_language)
-                    restricted_response = translator.translate(restricted_response)
+            #     # Translate restriction message if needed
+            #     if user_language != "en":
+            #         translator = GoogleTranslator(source="en", target=user_language)
+            #         restricted_response = translator.translate(restricted_response)
 
-                return JsonResponse({"response": restricted_response, "language": user_language})
+            #     return JsonResponse({"response": restricted_response, "language": user_language})
 
             # Convert Hinglish to Hindi for better AI understanding
             translator = GoogleTranslator(source="auto", target="hi")
@@ -881,67 +886,176 @@ def create_prescription(request):
     return render(request, "create_prescription.html")
 
 # Generate PDF
+# def download_prescription(request):
+#     id = request.GET.get('id')
+#     prescription = Prescription.objects.get(appointment=id)
+#     medications = prescription.medications.all()
+#     recommended_tests = prescription.test  # Assuming this is a text field or ManyToMany
+#     additional_remarks = prescription.remark  # Assuming this is a text field
+
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="prescription_{prescription.id}.pdf"'
+
+#     buffer = BytesIO()
+#     p = canvas.Canvas(buffer)
+
+#     logo = ImageReader("Medi/static/img/medi.jpg")
+#     p.drawImage(logo, 50, 780, width=100, height=50, preserveAspectRatio=True)
+
+#     # Title
+#     p.setFont("Helvetica-Bold", 20)
+#     p.drawString(180, 800, "MediReach Prescription")
+
+#     # Patient & Doctor Details
+#     p.setFont("Helvetica", 12)
+#     p.drawString(100, 760, f"Date: {prescription.date.strftime('%Y-%m-%d %H:%M')}")
+#     p.drawString(100, 740, f"Patient: {prescription.patient.name} (ID: {prescription.patient.id})")
+#     p.drawString(100, 720, f"Doctor: Dr. {prescription.doctor.name} (ID: {prescription.doctor.id})")
+#     p.drawString(100, 700, f"Doctor Email: {prescription.doctor.email}")
+
+#     # Diagnosis
+#     p.setFont("Helvetica-Bold", 12)
+#     p.drawString(100, 670, "Diagnosis:")
+#     p.setFont("Helvetica", 12)
+#     p.drawString(100, 650, prescription.diagnosis)
+
+#     # Medications Section
+#     p.setFont("Helvetica-Bold", 12)
+#     p.drawString(100, 620, "Medications & Dosage:")
+
+#     y_position = 600
+#     p.setFont("Helvetica", 12)
+#     for med in medications:
+#         p.drawString(100, y_position, f"{med.medicine_name} - {med.dosage}")
+#         y_position -= 20
+
+#     # Recommended Tests
+#     if recommended_tests:
+#         p.setFont("Helvetica-Bold", 12)
+#         p.drawString(100, y_position - 20, "Recommended Tests:")
+#         p.setFont("Helvetica", 12)
+#         p.drawString(100, y_position - 40, recommended_tests)
+#         y_position -= 60
+
+#     # Additional Remarks
+#     if additional_remarks:
+#         p.setFont("Helvetica-Bold", 12)
+#         p.drawString(100, y_position - 20, "Additional Remarks:")
+#         p.setFont("Helvetica", 12)
+#         p.drawString(100, y_position - 40, additional_remarks)
+
+#     p.showPage()
+#     p.save()
+
+#     buffer.seek(0)
+#     response.write(buffer.read())
+#     buffer.close()
+#     return response
+
+
+from io import BytesIO
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.utils import ImageReader
+from reportlab.lib.colors import blue
+
 def download_prescription(request):
     id = request.GET.get('id')
     prescription = Prescription.objects.get(appointment=id)
     medications = prescription.medications.all()
-    recommended_tests = prescription.test  # Assuming this is a text field or ManyToMany
-    additional_remarks = prescription.remark  # Assuming this is a text field
-
+    recommended_tests = prescription.test
+    additional_remarks = prescription.remark
+    
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="prescription_{prescription.id}.pdf"'
 
     buffer = BytesIO()
-    p = canvas.Canvas(buffer)
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
 
-    # Load MediReach logo
-    # logo_path = os.path.join(settings.STATICFILES_DIRS[0], "img", "mediReach (1).png")  # Update path
-    # if os.path.exists(logo_path):
+    # Background and Logo
     logo = ImageReader("Medi/static/img/medi.jpg")
-    p.drawImage(logo, 50, 780, width=100, height=50, preserveAspectRatio=True)
-
+    p.drawImage(logo, 40, height - 80, width=100, height=50, preserveAspectRatio=True)
+    
     # Title
-    p.setFont("Helvetica-Bold", 20)
-    p.drawString(180, 800, "MediReach Prescription")
+    # p.setFillColor(blue)
+    p.setFont("Helvetica-Bold", 22)
+    p.drawString(160, height - 50, "MediReach Prescription")
+
+    # Doctor Details
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(400, height - 80, f"DR. {prescription.doctor.name}")
+    p.setFont("Helvetica", 12)
+    p.drawString(400, height - 100, prescription.doctor.specialization.name)
+    # p.drawString(400, height - 115, "Medical Officer, Dept. of Expert Medicine")
 
     # Patient & Doctor Details
-    p.setFont("Helvetica", 12)
-    p.drawString(100, 760, f"Date: {prescription.date.strftime('%Y-%m-%d %H:%M')}")
-    p.drawString(100, 740, f"Patient: {prescription.patient.name} (ID: {prescription.patient.id})")
-    p.drawString(100, 720, f"Doctor: Dr. {prescription.doctor.name} (ID: {prescription.doctor.id})")
-    p.drawString(100, 700, f"Doctor Email: {prescription.doctor.email}")
-
-    # Diagnosis
+    # p.setFillColor(blue)
     p.setFont("Helvetica-Bold", 12)
-    p.drawString(100, 670, "Diagnosis:")
+    p.drawString(50, height - 140, "Date:")
     p.setFont("Helvetica", 12)
-    p.drawString(100, 650, prescription.diagnosis)
+    p.drawString(100, height - 140, prescription.date.strftime('%Y-%m-%d %H:%M'))
 
+    # p.setFillColor(blue)
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(50, height - 160, "Patient:")
+    p.setFont("Helvetica", 12)
+    p.drawString(100, height - 160, f"{prescription.patient.name} (ID: {prescription.patient.id})")
+
+    # p.setFillColor(blue)
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(50, height - 180, "Doctor:")
+    p.setFont("Helvetica", 12)
+    p.drawString(100, height - 180, f"Dr. {prescription.doctor.name} (ID: {prescription.doctor.id})")
+    p.drawString(100, height - 200, f"Doctor Email: {prescription.doctor.email}")
+    
+    # Diagnosis Section
+    # p.setFillColor(blue)
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(50, height - 230, "Diagnosis:")
+    p.setFont("Helvetica", 12)
+    p.drawString(50, height - 250, prescription.diagnosis)
+    
     # Medications Section
+    # p.setFillColor(blue)
     p.setFont("Helvetica-Bold", 12)
-    p.drawString(100, 620, "Medications & Dosage:")
-
-    y_position = 600
+    p.drawString(50, height - 280, "Medications & Dosage:")
+    
+    y_position = height - 300
     p.setFont("Helvetica", 12)
     for med in medications:
-        p.drawString(100, y_position, f"{med.medicine_name} - {med.dosage}")
+        p.drawString(50, y_position, f"{med.medicine_name} - {med.dosage}")
         y_position -= 20
 
     # Recommended Tests
     if recommended_tests:
+        # p.setFillColor(blue)
         p.setFont("Helvetica-Bold", 12)
-        p.drawString(100, y_position - 20, "Recommended Tests:")
+        p.drawString(50, y_position - 20, "Recommended Tests:")
         p.setFont("Helvetica", 12)
-        p.drawString(100, y_position - 40, recommended_tests)
+        p.drawString(50, y_position - 40, recommended_tests)
         y_position -= 60
 
     # Additional Remarks
     if additional_remarks:
+        # p.setFillColor(blue)
         p.setFont("Helvetica-Bold", 12)
-        p.drawString(100, y_position - 20, "Additional Remarks:")
+        p.drawString(50, y_position - 20, "Additional Remarks:")
         p.setFont("Helvetica", 12)
-        p.drawString(100, y_position - 40, additional_remarks)
+        p.drawString(50, y_position - 40, additional_remarks)
+        y_position -= 40
 
+    # Date and Signature Fields
+    # p.setStrokeColor(blue)
+    p.line(50, 100, 200, 100)
+    p.setFont("Helvetica", 12)
+    p.drawString(100, 80, "DATE")
+    
+    p.line(350, 100, 500, 100)
+    p.setFont("Helvetica", 12)
+    p.drawString(390, 80, "SIGNATURE")
+    
     p.showPage()
     p.save()
 
@@ -949,6 +1063,31 @@ def download_prescription(request):
     response.write(buffer.read())
     buffer.close()
     return response
+
+
+
+
+
+# from django.http import HttpResponse
+# from django.template.loader import render_to_string
+# from weasyprint import HTML
+
+# import os
+# #ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+# def download_prescription(request):
+#     id = request.GET.get('id')
+#     prescription = Prescription.objects.get(appointment=id)
+
+#     Load the HTML template and render it with prescription data
+#     html_content = render_to_string("prescription_template.html", {"prescription": prescription})
+
+#     Generate PDF
+#     pdf = HTML(string=html_content, base_url=request.build_absolute_uri()).write_pdf()
+
+#     Prepare response
+#     response = HttpResponse(pdf, content_type="application/pdf")
+#     response["Content-Disposition"] = f'attachment; filename="prescription_{prescription.id}.pdf"'
+#     return response
 
 
 
@@ -973,3 +1112,17 @@ class SubmitReview(APIView):
             defaults={"rating": rating, "review_text": review_text}
         )
         return Response({"message": "Review submitted successfully!"})
+
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def patient_history(request):
+    doctor = request.user  # Assuming the logged-in user is a doctor
+    
+    # Fetch all patients treated by this doctor
+    prescriptions = Prescription.objects.filter(doctor=doctor).values(
+        'patient__name', 'patient__age', 'patient__gender', 'date', 'diagnosis', 'test', 'remark'
+    )
+    
+    return render(request, 'patient_history.html', {'patients': list(prescriptions)})

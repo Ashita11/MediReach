@@ -24,9 +24,9 @@
           <li><a href="#" class="active">Dashboard</a></li>
           <li><a href="{% url 'doc_appointments' %}">My Appointments</a></li>
           <li><a href="{% url 'availability' %}">Availability</a></li>
-          <li><a href="#">My Patients</a></li>
+          <li><a href="{% url 'patient' %}">My Patients</a></li>
           <li><a href="{% url 'profile' %}">Profile</a></li>
-          <li><a href="logout"><button id="add" class="logout">Logout</button></a>
+          <!-- <li><a href="logout"><button id="add" class="logout">Logout</button></a> -->
         </ul>
       </nav>
     </div>
@@ -49,11 +49,11 @@
 
       <section class="status-section">
         <div class="status-card">
-          <p>1</p>
+          <p>{{nd}}</p>
           <span>All Doctors</span>
         </div>
         <div class="status-card">
-          <p>2</p>
+          <p>{{np}}</p>
           <span>All Patients</span>
         </div>
         <div class="status-card">

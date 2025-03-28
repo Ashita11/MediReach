@@ -108,6 +108,17 @@
             align-items: center;
         }
 
+        .prescription-modal-content{
+            height: 60%;
+            overflow: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+        }
+
         .modal-content {
             background: white;
             padding: 20px;
@@ -223,7 +234,7 @@
 
     <!-- Prescription Modal -->
     <div id="prescriptionModal" class="modal">
-        <div class="modal-content">
+        <div class="prescription-modal-content">
             <span class="close" onclick="closeRatingModal()">&times;</span>
             <h2>Generate Prescription</h2>
 
@@ -239,7 +250,7 @@
                 <label>Medications:</label>
                 <div class="prescription" id="medicine-list">
                     <div class="medicine-entry">
-                        <select class="medications" name="medicines[]" required></select>
+                        <select class="medications prescription" name="medicines[]" required></select>
                         <input type="text" name="dosages[]" placeholder="Dosage (e.g., 2 tablets/day)" required>
                         <button type="button" class="remove-medicine">Remove</button>
                     </div>
@@ -296,7 +307,7 @@
             const div = document.createElement("div");
             div.id = participant.sid;
             document.getElementById("video-container").appendChild(div);
-
+            document.getElementById("waiting-message").style.display="none"
             participant.tracks.forEach(publication => {
                 if (publication.isSubscribed) {
                     div.appendChild(publication.track.attach());

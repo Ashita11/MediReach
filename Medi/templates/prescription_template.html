@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .wrapper {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border: 5px solid #007BFF; /* Blue Border */
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+        }
+        .logo img {
+            width: 80px;
+            height: 80px;
+            margin-right: 20px;
+        }
+        .credentials h4 {
+            color: #007BFF;
+            margin: 0;
+        }
+        .credentials p, small {
+            margin: 2px 0;
+        }
+        .d-header {
+            color: #007BFF;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        hr {
+            border: 1px solid #007BFF;
+        }
+        .med_list {
+            margin-top: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <div class="logo">
+                <img src="https://seeklogo.com/images/H/hospital-clinic-plus-logo-7916383C7A-seeklogo.com.png" alt="Clinic Logo">
+            </div>
+            <div class="credentials">
+                <h4>Dr. {{ prescription.doctor.name }}</h4>
+                <p>Chamber: {{ prescription.doctor.chamber }}</p>
+                <small>Address: {{ prescription.doctor.address }}</small><br>
+                <small>Mb: {{ prescription.doctor.phone }}</small>
+            </div>
+        </div>
+
+        <h3 class="d-header">Patient Details</h3>
+        <p><strong>Name:</strong> {{ prescription.patient.name }}</p>
+        <p><strong>Age:</strong> {{ prescription.patient.age }}</p>
+        <p><strong>Sex:</strong> {{ prescription.patient.gender }}</p>
+
+        <h3 class="d-header">Symptoms</h3>
+        <ul>
+            {% for symptom in prescription.symptoms %}
+                <li>{{ symptom }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3 class="d-header">Tests</h3>
+        <ul>
+            {% for test in prescription.test_list %}
+                <li>{{ test }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3 class="d-header">Medications & Dosage</h3>
+        <table>
+            <tr>
+                <th>Medicine</th>
+                <th>Dosage</th>
+                <th>Timing</th>
+                <th>Period</th>
+            </tr>
+            {% for med in prescription.medications %}
+            <tr>
+                <td>{{ med.medicine_name }}</td>
+                <td>{{ med.dosage }}</td>
+                <td>{{ med.timing }}</td>
+                <td>{{ med.period }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h3 class="d-header">Advice</h3>
+        <p>{{ prescription.remarks }}</p>
+
+        <hr>
+
+        <div class="footer">
+            <p><strong>Date:</strong> {{ prescription.date }}</p>
+            <p><strong>Doctor's Signature:</strong> ______________________</p>
+        </div>
+    </div>
+</body>
+</html>
